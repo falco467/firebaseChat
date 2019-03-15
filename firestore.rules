@@ -1,0 +1,29 @@
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isChatroomOpenRead(roomName) {
+      return get(/databases/$(database)/documents/chatrooms/$(roomName)).data.openRead
+    }
+    function isUserMemberOfRoom(roomName) {
+      return exists(/databases/$(database)/documents/chatrooms/$(roomName)/members/$(request.auth.uid))
+    }
+    
+    match /users/{userId} {
+      allow read;
+    }
+    
+    match /chatrooms/{roomName} {
+      allow read: if isChatroomOpenRead(roomName)
+      allow read: if request.auth != null && isUserMemberOfRoom(roomName)
+      
+      match /messages/{message} {
+        allow read: if isChatroomOpenRead(roomName)
+        allow read: if request.auth != null && isUserMemberOfRoom(roomName)
+      }
+      
+      match /members/{member} {
+        allow read: if isChatroomOpenRead(roomName)
+        allow read: if request.auth != null && isUserMemberOfRoom(roomName)
+      }
+    }
+  }
+}

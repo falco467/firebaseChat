@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="icon" sizes="192x192" href="images/icons-192.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="images/icons-192.png">
+  <link rel="apple-touch-icon" sizes="512x512" href="images/icons-512.png">
+  <meta name="theme-color" content="#153c5d">
+  <title>Firebops Chat</title>
+
+  <!-- Script to hopefully get this working on iOS, when they will finally support WebPush Notifications-->
+  <script async src="https://cdn.jsdelivr.net/npm/pwacompat@2.0.8/pwacompat.min.js"
+    integrity="sha384-uONtBTCBzHKF84F6XvyC8S0gL8HTkAPeCyBNvfLfsqHh+Kd6s/kaS4BdmNQ5ktp1"
+    crossorigin="anonymous"></script>
+
+  <!-- Firebase serves JS libs via the path /__/... - the init script will include the Public API-Keys -->
+  <script defer src="/__/firebase/5.8.6/firebase-app.js"></script>
+  <script defer src="/__/firebase/5.8.6/firebase-auth.js"></script>
+  <script defer src="/__/firebase/5.8.6/firebase-firestore.js"></script>
+  <script defer src="/__/firebase/5.8.6/firebase-functions.js"></script>
+  <script defer src="/__/firebase/5.8.6/firebase-messaging.js"></script>
+  <script defer src="/__/firebase/init.js"></script>
+
+  <!-- Firebase UI is used for the Register/Login popup -->
+  <script defer src="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.js"></script>
+
+  <script defer src="https://cdn.jsdelivr.net/npm/vue"></script>
+  <script type="module" src="index.mjs"></script>
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/solid.css" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/fontawesome.css" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.css" />
+  <link rel="stylesheet" href="index.css" />
+</head>
+
+<body>
+  <div id="errorMessage" class="message error"></div>
+
+  <div id="main" class="main" v-cloak>
+
+    <div v-if="!initialized" class="loading-indicator">
+      <i class="fa fa-spinner fa-spin fa-5x"></i>
+    </div>
+
+    <div class="chatapp" v-show="initialized">
+      <!-- This div is used as a container by Firebase UI -->
+      <div v-show="authenticating" id="authenticator" class="auth"></div>
+
+      <div class="header">
+        <div class="roomName">
+          <h2>{{roomName}}</h2>
+        </div>
+        <button class="menu button" @click.stop="requestNotifications">
+          <i class="fa fa-bars fa-2x"></i>
+        </button>
+      </div>
+
+      <div class="message-window">
+        <div class="chatmessage" v-for="m,i in messagesWithMeta" :class="{new: i>=readMessageCount}">
+            <span class="message-content">
+              <span class="author">{{m.authorName}}:</span>
+              <span class="content">{{m.content}}</span>
+            <span class="message-timestamp">{{m.timeString}}</span>
+        </div>
+      </div>
+
+      <div v-if="user" class="footer">
+        <input class="new-message" type="text" name="new-message" v-model="newMessageText" @keyup.enter.exact="sendMessage">
+        <button class="button send" @click.stop="sendMessage"><i class="fa fa-paper-plane"></i></button>
+      </div>
+      <div v-else class="footer">
+        <button class="button register" @click.stop="startAuth" v-if="!authenticating">sign up/login</i></button>
+        <button class="button cancel" @click.stop="stopAuth" v-else>cancel</i></button>
+      </div>
+
+    </div>
+  </div>
+</body>
+
+</html>

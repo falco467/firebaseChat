@@ -1,0 +1,66 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Firebase Serve local",
+            "command": "firebase",
+            "type": "shell",
+            "args": [
+                "serve"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Firebase Deploy All",
+            "command": "firebase",
+            "type": "shell",
+            "args": [
+                "deploy"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Firebase Deploy Hosting",
+            "command": "firebase",
+            "type": "shell",
+            "args": [
+                "deploy",
+                "--only",
+                "hosting"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Firebase Deploy All Functions",
+            "command": "firebase",
+            "type": "shell",
+            "args": [
+                "deploy",
+                "--only",
+                "functions"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Firebase Deploy certain Functions",
+            "command": "firebase",
+            "type": "shell",
+            "args": [
+                "deploy",
+                "--only",
+                "functions${input:functionNames}"
+            ],
+            "problemMatcher": []
+        }
+    ],
+    "inputs": [
+        {
+            "id": "functionNames",
+            "description": "List functions starting with a colon (e.g. :function1,function2)",
+            "type": "promptString",
+            "default": ":"
+        }
+    ]
+}

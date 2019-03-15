@@ -1,0 +1,160 @@
+@import url(https://fonts.googleapis.com/css?family=Roboto:400,500,700);
+body {
+  --main-color: #d5d8db;
+  margin: 0;
+  padding: 0;
+  background: #3c3636;
+  color: var(--main-color);
+  height: 100vh;
+  overflow: hidden;
+  font-family: Roboto, Helvetica, Arial, sans-serif;
+}
+
+.message.error {
+  background: #b92424;
+  padding: 1em;
+  border-radius: 0.3em;
+  position: absolute;
+  top: 1em;
+  left: 1em;
+  right: 1em;
+  display: none;
+}
+
+.main {
+  height: 100%;
+}
+
+/* v-cloak attribute is removed by Vue.JS when it is finished initializing */
+
+#main[v-cloak]>.chatapp {
+  display: none;
+}
+
+.loading-indicator {
+  position: absolute;
+  top: calc(40vh - 2em);
+  left: calc(50vw - 2em);
+  width: 4em;
+  height: 4em;
+}
+
+.auth {
+  position: absolute;
+  left: 2em;
+  right: 2em;
+  top: calc(50vh - 10em);
+  height: 20em;
+  display: flex;
+  align-items: center;
+  background: var(--main-color);
+}
+
+.chatapp {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* HEADER  AND FOOTER */
+
+.header,
+.footer {
+  background: #153c5d;
+  padding: 0.5em;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.header>.roomName {
+  flex-grow: 1;
+}
+
+h2 {
+  margin: 0;
+  font-size: xx-large;
+}
+
+h3 {
+  margin: 0;
+  font-size: large;
+}
+
+.button {
+  font-size: large;
+  background: #314eac;
+  color: var(--main-color);
+  border: none;
+  border-radius: 0.5em;
+  margin: 0;
+  padding: 0.4em 0.4em;
+  cursor: pointer;
+}
+
+.menu.button {
+  background: transparent;
+  padding: 0 0.5em;
+}
+
+input.new-message {
+  margin-right: 0.4em;
+  padding: 0.3em;
+  font-size: medium;
+  border: none;
+  background: var(--main-color);
+  flex-grow: 1;
+}
+
+.footer {
+  justify-content: flex-end;
+}
+
+/* MESSAGE WINDOW */
+
+.message-window {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.chatmessage {
+  background: #29282a;
+  padding: 0.5em;
+  margin: 0.2em;
+  border-radius: 0.2em;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.chatmessage.new {
+  animation-name: new-message-animation;
+  animation-duration: 1s;
+}
+
+@keyframes new-message-animation {
+  from {
+    background-color: #575c78;
+  }
+  to {
+    background-color: #29282a;
+  }
+}
+
+.message-timestamp {
+  font-size: smaller;
+  color: gray;
+  align-self: flex-end;
+}
+
+.message-content>.author {
+  color: #314eac;
+  font-weight: bold;
+}
+
+.message-content>.content {
+  overflow-wrap: break-word;
+}
