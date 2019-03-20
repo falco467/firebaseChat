@@ -7,7 +7,7 @@ const db = firebase.firestore()
 // This Key is unique for each Firebase Project
 // It can be generated via Firebase Console -> settings -> cloud messaging -> web pus certificats
 const webPushPublicKey = 'BM5-UTipF8vci0jGOK-gRubAEtr7vermG7pSvPCZZZ02dOkpxoc6BXz4N73B3H4Q_0u5_QW1GNQv0bidPkVuqBE'
-firebase.messaging().usePublicVapidKey(webPushPublicKey)
+firebase.messaging.isSupported() && firebase.messaging().usePublicVapidKey(webPushPublicKey)
 
 // Make unhandled errors/rejected promises visible
 const errorMessageDiv = document.getElementById('errorMessage')
@@ -85,7 +85,7 @@ window.VueMain = new Vue({
     window.setInterval(() => { this.currentDate = new Date() }, 60000)
 
     // This is called when the App has Focus and receives a notification
-    firebase.messaging().onMessage(function (payload) {
+    firebase.messaging.isSupported() && firebase.messaging().onMessage(function (payload) {
       console.log('Message received. ', payload)
     })
   },
