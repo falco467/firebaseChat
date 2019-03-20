@@ -39,7 +39,7 @@ Save your login and the active Project in your Workspace
 Now you can test the project locally (except firestore trigger functions, which are not supported
 by Googles local function emulation)
 
-    firebase server
+    firebase serve
 
 And you can deploy the project to your firebase url <YourProjectName>.firebaseapp.com
 

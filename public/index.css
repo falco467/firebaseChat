@@ -148,6 +148,7 @@ input.new-message {
   font-size: smaller;
   color: gray;
   align-self: flex-end;
+  white-space: nowrap;
 }
 
 .message-content>.author {
