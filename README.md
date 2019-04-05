@@ -16,6 +16,11 @@ Install node_modules for Google Cloud functions:
     cd functions
     npm install
 
+The NodeJS packages for firebase cloud functions will need Python 2.X and Git installed on your system
+and in your path.
+
+## Initiate your Google Firebase Project
+
 Create a Google Firebase Project (free): [Firebase Console](https://console.firebase.google.com)
 
 This App needs to use the following features: Hosting, Firestore, Cloud Functions
@@ -34,7 +39,7 @@ Create a WebPush Certificate for your Project and paste it into index.mjs
 Save your login and the active Project in your Workspace
 
     firebase login
-    firebase use -add
+    firebase use --add
 
 Now you can test the project locally (except firestore trigger functions, which are not supported
 by Googles local function emulation)

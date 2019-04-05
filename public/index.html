@@ -12,9 +12,10 @@
   <title>Firebops Chat</title>
 
   <!-- Script to hopefully get this working on iOS, when they will finally support WebPush Notifications-->
-  <script async src="https://cdn.jsdelivr.net/npm/pwacompat@2.0.8/pwacompat.min.js"
-    integrity="sha384-uONtBTCBzHKF84F6XvyC8S0gL8HTkAPeCyBNvfLfsqHh+Kd6s/kaS4BdmNQ5ktp1"
-    crossorigin="anonymous"></script>
+  <script defer src="lib/pwacompat.js"></script>
+  <script defer src="lib/vue.js"></script>
+  <!-- Firebase UI is used for the Register/Login popup -->
+  <script defer src="lib/firebaseui.js"></script>
 
   <!-- Firebase serves JS libs via the path /__/... - the init script will include the Public API-Keys -->
   <script defer src="/__/firebase/5.8.6/firebase-app.js"></script>
@@ -24,10 +25,6 @@
   <script defer src="/__/firebase/5.8.6/firebase-messaging.js"></script>
   <script defer src="/__/firebase/init.js"></script>
 
-  <!-- Firebase UI is used for the Register/Login popup -->
-  <script defer src="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.js"></script>
-
-  <script defer src="https://cdn.jsdelivr.net/npm/vue"></script>
   <script type="module" src="index.mjs"></script>
 
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/solid.css" crossorigin="anonymous">
@@ -37,47 +34,51 @@
 </head>
 
 <body>
-  <div id="errorMessage" class="message error"></div>
+  <dialog id="errorMessage" class="message error"></dialog>
 
-  <div id="main" class="main" v-cloak>
+  <div id="chatapp">
+    <!-- This div is used as a container by Firebase UI -->
+    <aside v-show="authenticating" id="authenticator" class="auth" v-cloak></aside>
 
-    <div v-if="!initialized" class="loading-indicator">
-      <i class="fa fa-spinner fa-spin fa-5x"></i>
-    </div>
+    <header>
+      <h2 class="roomName">
+        <span v-text="roomName"></span>
+        <small v-if="!initialized || !uptodate" class="loading-indicator">
+          <i class="fa fa-spinner fa-spin"></i>
+        </small>
+      </h2>
+      <button class="menu button" @click.stop="requestNotifications">
+        <i class="fa fa-bars fa-2x"></i>
+      </button>
+    </header>
 
-    <div class="chatapp" v-show="initialized">
-      <!-- This div is used as a container by Firebase UI -->
-      <div v-show="authenticating" id="authenticator" class="auth"></div>
+    <main class="message-window">
+      <article class="chatmessage" v-for="m,i in messagesWithMeta" :class="{new: i>=readMessageCount}" v-cloak>
+        <section class="message-content">
+          <span class="author">{{m.authorName}}:</span>
+          <span class="content">{{m.content}}</span>
+        </section>
+        <time class="message-timestamp">{{m.timeString}}</time>
+      </article>
 
-      <div class="header">
-        <div class="roomName">
-          <h2>{{roomName}}</h2>
-        </div>
-        <button class="menu button" @click.stop="requestNotifications">
-          <i class="fa fa-bars fa-2x"></i>
-        </button>
-      </div>
+      <article class="chatmessage placeholder new" v-if="false">
+        <section class="message-content">
+          <span class="author">Loading</span>
+          <span class="content">...</span>
+        </section>
+      </article>
+    </main>
 
-      <div class="message-window">
-        <div class="chatmessage" v-for="m,i in messagesWithMeta" :class="{new: i>=readMessageCount}">
-            <span class="message-content">
-              <span class="author">{{m.authorName}}:</span>
-              <span class="content">{{m.content}}</span>
-            </span>
-            <span class="message-timestamp">{{m.timeString}}</span>
-        </div>
-      </div>
+    <footer v-if="user">
+      <input class="new-message" type="text" name="new-message" v-model="newMessageText"
+        @keyup.enter.exact="sendMessage">
+      <button class="button send" @click.stop="sendMessage"><i class="fa fa-paper-plane"></i></button>
+    </footer>
+    <footer v-else v-cloak>
+      <button class="button register" @click.stop="startAuth" v-if="!authenticating">sign up/login</i></button>
+      <button class="button cancel" @click.stop="stopAuth" v-else>cancel</i></button>
+    </footer>
 
-      <div v-if="user" class="footer">
-        <input class="new-message" type="text" name="new-message" v-model="newMessageText" @keyup.enter.exact="sendMessage">
-        <button class="button send" @click.stop="sendMessage"><i class="fa fa-paper-plane"></i></button>
-      </div>
-      <div v-else class="footer">
-        <button class="button register" @click.stop="startAuth" v-if="!authenticating">sign up/login</i></button>
-        <button class="button cancel" @click.stop="stopAuth" v-else>cancel</i></button>
-      </div>
-
-    </div>
   </div>
 </body>
 

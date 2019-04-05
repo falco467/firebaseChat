@@ -19,12 +19,18 @@ window.onerror = err => {
 }
 window.addEventListener('unhandledrejection', window.onerror)
 
+// Register Serviceworker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/service-worker.js', { scope: '/' })
+}
+
 // Function Emulation for local testing
 const functions = firebase.functions()
 if (window.location.hostname === 'localhost') functions.emulatorOrigin = 'http://localhost:5001'
 
 const data = {
   initialized: false,
+  uptodate: false,
   authenticating: false,
   user: null,
   users: {},
@@ -48,6 +54,7 @@ const firebaseAuthUi = new firebaseui.auth.AuthUI(firebase.auth())
 
 firebase.auth().onAuthStateChanged(user => {
   data.user = user
+  if (user) window.localStorage.user = JSON.stringify(user)
   data.initialized = true
 })
 
@@ -74,10 +81,12 @@ const callSendMessage = firebase.functions().httpsCallable('sendMessage')
 const callRegisterForTopic = firebase.functions().httpsCallable('registerForTopic')
 
 // Vue Application
-window.VueMain = new Vue({
-  el: '#main',
+window.ChatApp = new Vue({
+  el: '#chatapp',
   data,
   created () {
+    this.initFromLocalStorage()
+
     this.loadUsers()
     if (this.initialized) this.loadRoom(this.roomName)
 
@@ -86,7 +95,7 @@ window.VueMain = new Vue({
 
     // This is called when the App has Focus and receives a notification
     firebase.messaging.isSupported() && firebase.messaging().onMessage(function (payload) {
-      console.log('Message received. ', payload)
+      // console.log('Message received. ', payload)
     })
   },
   computed: {
@@ -104,11 +113,24 @@ window.VueMain = new Vue({
     }
   },
   methods: {
+    async initFromLocalStorage () {
+      if (window.localStorage.user) this.user = JSON.parse(window.localStorage.user)
+      if (window.localStorage.users) this.users = JSON.parse(window.localStorage.users)
+      if (window.localStorage.roomName) this.roomName = window.localStorage.roomName
+      if (window.localStorage.messages) {
+        this.messages = JSON.parse(window.localStorage.messages)
+
+        await this.$nextTick()
+        const messageWindow = this.$el.querySelector('.message-window')
+        messageWindow.scroll(0, messageWindow.scrollHeight)
+      }
+    },
     loadUsers () {
       if (this.unsubscribers.users) return
 
       this.unsubscribers.users = db.collection('users').onSnapshot(snap => {
         snap.forEach(u => { this.users[u.id] = u.data() })
+        window.localStorage.users = JSON.stringify(this.users)
       }, window.onerror)
     },
 
@@ -120,7 +142,6 @@ window.VueMain = new Vue({
 
       this.roomName = roomName
       this.room = {}
-      this.messages = []
       this.members = []
 
       const roomRef = db.collection('chatrooms').doc(roomName)
@@ -145,6 +166,7 @@ window.VueMain = new Vue({
       this.unsubscribers.room = roomRef.onSnapshot(snap => {
         this.roomName = snap.id
         this.room = snap.data()
+        window.localStorage.roomName = this.roomName
       }, window.onerror)
 
       this.unsubscribers.members = roomRef.collection('members').onSnapshot(snap => {
@@ -163,12 +185,16 @@ window.VueMain = new Vue({
         .where('posted', '>', lastDate).onSnapshot(async snap => {
           this.readMessageCount = this.messages.length
           snap.docChanges().filter(d => d.type === 'added').forEach(d => this.messages.push(d.doc.data()))
+
+          window.localStorage.messages = JSON.stringify(this.messages, ['author', 'content', 'posted', 'id', 'seconds'])
+
           await this.$nextTick()
           const messageWindow = this.$el.querySelector('.message-window')
           messageWindow.scroll(0, messageWindow.scrollHeight)
         }, window.onerror)
 
       // Scroll all the way down when the DOM is ready
+      this.uptodate = true
       await this.$nextTick()
       const messageWindow = this.$el.querySelector('.message-window')
       messageWindow.scroll(0, messageWindow.scrollHeight)

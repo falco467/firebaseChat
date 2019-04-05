@@ -21,22 +21,16 @@ body {
   display: none;
 }
 
-.main {
-  height: 100%;
-}
-
 /* v-cloak attribute is removed by Vue.JS when it is finished initializing */
 
-#main[v-cloak]>.chatapp {
-  display: none;
+[v-cloak] {
+  display: none!important;
 }
 
-.loading-indicator {
-  position: absolute;
-  top: calc(40vh - 2em);
-  left: calc(50vw - 2em);
-  width: 4em;
-  height: 4em;
+#chatapp {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .auth {
@@ -50,16 +44,10 @@ body {
   background: var(--main-color);
 }
 
-.chatapp {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
 /* HEADER  AND FOOTER */
 
-.header,
-.footer {
+header,
+footer {
   background: #153c5d;
   padding: 0.5em;
   display: flex;
@@ -67,7 +55,7 @@ body {
   flex-shrink: 0;
 }
 
-.header>.roomName {
+header>.roomName {
   flex-grow: 1;
 }
 
@@ -106,7 +94,7 @@ input.new-message {
   flex-grow: 1;
 }
 
-.footer {
+footer {
   justify-content: flex-end;
 }
 

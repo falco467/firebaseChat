@@ -10,24 +10,6 @@ self.importScripts(
   '/__/firebase/init.js'
 )
 
-// Caching for Offline Usage
-
-self.addEventListener('install', event => event.waitUntil(
-  self.caches.open('v1').then(cache => cache.addAll([
-    '/',
-    '/index.html',
-    '/index.mjs',
-    '/index.css',
-    '/vue.js',
-    '/images/icons-192.png',
-    '/images/icons-512.png'
-  ]))
-))
-
-self.addEventListener('fetch', event => event.respondWith(
-  self.caches.match(event.request).then(cacheHit => cacheHit || self.fetch(event.request))
-))
-
 // Notifications
 
 firebase.messaging().setBackgroundMessageHandler(payload => {
