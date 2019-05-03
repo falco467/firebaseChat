@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="Description" content="Firebase Chat Application Main Window">
   <link rel="manifest" href="/manifest.json" />
   <link rel="icon" sizes="192x192" href="images/icons-192.png">
   <link rel="apple-touch-icon" sizes="192x192" href="images/icons-192.png">
@@ -27,13 +28,14 @@
 
   <script type="module" src="index.mjs"></script>
 
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/solid.css" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/fontawesome.css" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.css" />
   <link rel="stylesheet" href="index.css" />
 </head>
 
 <body>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/solid.css" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/fontawesome.css" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.css" />
+
   <dialog id="errorMessage" class="message error"></dialog>
 
   <div id="chatapp">
@@ -43,14 +45,14 @@
     <header>
       <h2 class="roomName">
         <span v-text="roomName"></span>
-        <button class="menu button" @click.stop="toggleSubscription">
+        <button class="menu button" @click.stop="toggleSubscription" aria-label="toggle notifications">
           <i class="fa" :class="{ 'fa-comment': notificationEnabled, 'fa-comment-slash': !notificationEnabled }" v-cloak></i>
         </button>
         <small v-if="!initialized || !uptodate" class="loading-indicator">
           <i class="fa fa-spinner fa-spin"></i>
         </small>
       </h2>
-      <button class="menu button">
+      <button class="menu button" aria-label="show menu">
         <i class="fa fa-bars fa-2x"></i>
       </button>
     </header>
@@ -75,7 +77,7 @@
     <footer v-if="user">
       <input class="new-message" type="text" name="new-message" v-model="newMessageText"
         @keyup.enter.exact="sendMessage">
-      <button class="button send" @click.stop="sendMessage"><i class="fa fa-paper-plane"></i></button>
+      <button class="button send" @click.stop="sendMessage" aria-label="send"><i class="fa fa-paper-plane"></i></button>
     </footer>
     <footer v-else v-cloak>
       <button class="button register" @click.stop="startAuth" v-if="!authenticating">sign up/login</i></button>
