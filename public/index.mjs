@@ -46,7 +46,8 @@ const data = {
     messages: null
   },
   readMessageCount: 1000,
-  currentDate: new Date()
+  currentDate: new Date(),
+  notificationEnabled: false
 }
 
 // Initialize Firebase Auth UI
@@ -54,7 +55,10 @@ const firebaseAuthUi = new firebaseui.auth.AuthUI(firebase.auth())
 
 firebase.auth().onAuthStateChanged(user => {
   data.user = user
-  if (user) window.localStorage.user = JSON.stringify(user)
+  if (user) {
+    window.localStorage.user = JSON.stringify(user)
+    if (navigator.serviceWorker.controller) navigator.serviceWorker.controller.postMessage({ type: 'uid', uid: user.uid })
+  }
   data.initialized = true
 })
 
@@ -79,6 +83,7 @@ if (firebaseAuthUi.isPendingRedirect()) {
 // Google Cloud Functions
 const callSendMessage = firebase.functions().httpsCallable('sendMessage')
 const callRegisterForTopic = firebase.functions().httpsCallable('registerForTopic')
+const callUnregisterFromTopic = firebase.functions().httpsCallable('unregisterFromTopic')
 
 // Vue Application
 window.ChatApp = new Vue({
@@ -144,6 +149,8 @@ window.ChatApp = new Vue({
       this.room = {}
       this.members = []
 
+      const storeString = window.localStorage[`${this.roomName}-subscribed`]
+      this.notificationEnabled = storeString ? JSON.parse(storeString) : false
       const roomRef = db.collection('chatrooms').doc(roomName)
 
       try {
@@ -211,6 +218,20 @@ window.ChatApp = new Vue({
       })
     },
 
+    async toggleSubscription () {
+      if (this.notificationEnabled) {
+        const currentToken = await firebase.messaging().getToken()
+        const regResult = await callUnregisterFromTopic({ token: currentToken, topic: this.roomName })
+        if (regResult.data.failureCount > 0) throw new Error(regResult.data.errors[0])
+        this.notificationEnabled = false
+      } else {
+        await this.requestNotifications()
+        this.notificationEnabled = true
+      }
+
+      window.localStorage[`${this.roomName}-subscribed`] = JSON.stringify(this.notificationEnabled)
+    },
+
     async requestNotifications () {
       try {
         await firebase.messaging().requestPermission()
@@ -221,7 +242,7 @@ window.ChatApp = new Vue({
         firebase.messaging().onTokenRefresh(this.refreshNotificationToken)
       } catch (err) {
         // This can also happen if the user does not grant us permission
-        console.err('Unable to register for Notifications.', err)
+        console.error('Unable to register for Notifications.', err)
       }
     },
 
@@ -229,7 +250,10 @@ window.ChatApp = new Vue({
       const currentToken = await firebase.messaging().getToken()
 
       if (currentToken) {
-        await callRegisterForTopic({ token: currentToken, topic: this.roomName })
+        const regResult = await callRegisterForTopic({ token: currentToken, topic: this.roomName })
+        if (regResult.data.failureCount > 0) throw new Error(regResult.data.errors[0])
+      } else {
+        console.error('No Registration Token available')
       }
     },
 

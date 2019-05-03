@@ -43,11 +43,14 @@
     <header>
       <h2 class="roomName">
         <span v-text="roomName"></span>
+        <button class="menu button" @click.stop="toggleSubscription">
+          <i class="fa" :class="{ 'fa-comment': notificationEnabled, 'fa-comment-slash': !notificationEnabled }" v-cloak></i>
+        </button>
         <small v-if="!initialized || !uptodate" class="loading-indicator">
           <i class="fa fa-spinner fa-spin"></i>
         </small>
       </h2>
-      <button class="menu button" @click.stop="requestNotifications">
+      <button class="menu button">
         <i class="fa fa-bars fa-2x"></i>
       </button>
     </header>

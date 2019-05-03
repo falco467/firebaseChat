@@ -1,5 +1,7 @@
 /* global self */
 
+// Unique String for reload: UidFix2
+
 // For IntellisSense of Service-Worker classes in VS Code
 /// <reference path="../dev/lib.webworker.d.ts"/>
 

@@ -11,9 +11,16 @@ self.importScripts(
 )
 
 // Notifications
+let uid = firebase.auth().getUid()
+
+self.addEventListener('message', event => {
+  if (event.data.type === 'uid') {
+    uid = event.data.uid
+  }
+})
 
 firebase.messaging().setBackgroundMessageHandler(payload => {
-  if (firebase.auth().getUid() === payload.data.authorId) return
+  if (uid === payload.data.authorId) return
 
   self.registration.showNotification(`${payload.data.authorName} wrote in ${payload.data.room}`, {
     body: payload.data.content,
