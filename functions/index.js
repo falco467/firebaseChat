@@ -1,7 +1,5 @@
 const functions = require('firebase-functions')
 const admin = require('firebase-admin')
-const cheerio = require('cheerio')
-const fetch = require('node-fetch')
 
 admin.initializeApp(functions.config().firebase)
 const db = admin.firestore()
@@ -20,20 +18,17 @@ function throwIfNotAuthenticated (context) {
  * @returns {string}
  */
 async function getPreviewImage (message) {
-  const match = message.match(/https:\/\/gph.is\/g\/\w+/)
-  if (!match) return null
-
-  const pageSource = await(await fetch(match[0])).text()
-
-  const $ = cheerio.load(pageSource)
-  return $(`meta[name=og:image]`).attr('content')
+  const match = message.match(/http[s]?:\/\/media[0-9]*.giphy.com\/media\/[/.\w+_0-9-]+/)
+  return match ? match[0] : null
 }
- 
+
 // Callable Functions
 
 exports.sendMessage = functions.https.onCall(async (data, context) => {
   console.log('Message sent:', data)
   throwIfNotAuthenticated(context)
+
+  const imgPreviewPromise = getPreviewImage(data.content)
 
   const roomRef = db.collection('chatrooms').doc(data.room)
   const roomSnap = await roomRef.get()
@@ -43,10 +38,19 @@ exports.sendMessage = functions.https.onCall(async (data, context) => {
     if (!memberSnap.exists) throw new functions.https.HttpsError('permission-denied', 'Not Member of closed room.')
   }
 
+  let imgUrl = null
+
+  try {
+    imgUrl = await imgPreviewPromise
+  } catch (err) {
+    console.log('Error loading preview: ', err)
+  }
+
   return roomRef.collection('messages').add({
     author: db.collection('users').doc(context.auth.uid),
     content: data.content,
-    posted: admin.firestore.FieldValue.serverTimestamp()
+    posted: admin.firestore.FieldValue.serverTimestamp(),
+    image: imgUrl
   })
 })
 

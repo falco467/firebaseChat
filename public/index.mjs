@@ -47,7 +47,9 @@ const data = {
   },
   readMessageCount: 1000,
   currentDate: new Date(),
-  notificationEnabled: false
+  notificationEnabled: false,
+  gifPreview: null,
+  gifSearchRequest: null
 }
 
 // Initialize Firebase Auth UI
@@ -56,6 +58,7 @@ const firebaseAuthUi = new firebaseui.auth.AuthUI(firebase.auth())
 firebase.auth().onAuthStateChanged(user => {
   data.user = user
   if (user) {
+    console.log('Login: ' + JSON.stringify(user))
     window.localStorage.user = JSON.stringify(user)
     if (navigator.serviceWorker.controller) navigator.serviceWorker.controller.postMessage({ type: 'uid', uid: user.uid })
   }
@@ -70,6 +73,7 @@ const firebaseUiAuthConfig = {
   ],
   callbacks: {
     signInSuccessWithAuthResult: () => {
+      console.log('Login signInSuccessWithAuthResult')
       data.authenticating = false
       return false
     }
@@ -115,9 +119,55 @@ window.ChatApp = new Vue({
   watch: {
     initialized (val) {
       if (val) this.loadRoom(this.roomName)
+    },
+    async newMessageText (val) {
+      if (this.gifSearchRequest) {
+        this.gifSearchRequest = null
+        this.gifSearchRequest.abort()
+      }
+
+      const gifSearch = val.match(/@gif (\w+|"[^"]+")(\s*)/)
+      if (!gifSearch) {
+        this.gifPreview = null
+        return
+      }
+
+      try {
+        if (this.debounceGifSearch) {
+          this.debounceGifSearch()
+        }
+        await new Promise((resolve, reject) => {
+          this.debounceGifSearch = reject
+          window.setTimeout(resolve, 300)
+        })
+      } catch (debounceCancelled) {
+        return
+      }
+
+      const giphykey = 'DQK1RdKTm58I28eJukhBAGoNsRVosE96'
+      const limit = 6
+      const searchTerm = gifSearch[1]
+      const offset = limit * gifSearch[2].length
+
+      try {
+        this.gifSearchRequest = new window.AbortController()
+        const result = await (await window.fetch(
+          `https://api.giphy.com/v1/gifs/search?api_key=${giphykey}&limit=${limit}&offset=${offset}&q=${searchTerm}`,
+          { signal: this.gifSearchRequest.signal }
+        )).json()
+
+        this.gifSearchRequest = null
+        this.gifPreview = result.data.map(d => d.images.downsized_medium.url)
+      } catch (e) {
+        console.log('Search failed: ', e)
+      }
     }
   },
   methods: {
+    selectGif (gifUrl) {
+      this.newMessageText = this.newMessageText.replace(/@gif (\w+|"[^"]+")(\s+)/, gifUrl + ' ')
+      document.getElementById('new-message').focus()
+    },
     async initFromLocalStorage () {
       if (window.localStorage.user) this.user = JSON.parse(window.localStorage.user)
       if (window.localStorage.users) this.users = JSON.parse(window.localStorage.users)

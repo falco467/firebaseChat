@@ -21,6 +21,11 @@ body {
   display: none;
 }
 
+.img-preview {
+  display: block;
+  max-width: 20em;
+}
+
 /* v-cloak attribute is removed by Vue.JS when it is finished initializing */
 
 [v-cloak] {

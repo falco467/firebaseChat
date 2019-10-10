@@ -46,7 +46,8 @@
       <h2 class="roomName">
         <span v-text="roomName"></span>
         <button class="menu button" @click.stop="toggleSubscription" aria-label="toggle notifications">
-          <i class="fa" :class="{ 'fa-comment': notificationEnabled, 'fa-comment-slash': !notificationEnabled }" v-cloak></i>
+          <i class="fa" :class="{ 'fa-comment': notificationEnabled, 'fa-comment-slash': !notificationEnabled }"
+            v-cloak></i>
         </button>
         <small v-if="!initialized || !uptodate" class="loading-indicator">
           <i class="fa fa-spinner fa-spin"></i>
@@ -62,6 +63,9 @@
         <section class="message-content">
           <span class="author">{{m.authorName}}:</span>
           <span class="content">{{m.content}}</span>
+          <picture v-if="m.image">
+            <img class="img-preview" :src="m.image">
+          </picture>
         </section>
         <time class="message-timestamp">{{m.timeString}}</time>
       </article>
@@ -73,11 +77,11 @@
         </section>
       </article>
     </main>
-    <div v-if="gifPreview" style="display: flex; position: absolute; bottom: 3.2em; height: 10em; width: calc( 100% - 17px );">
-        <img  v-for="gif in gifPreview" :src="gif" @click="selectGif(gif)" />
+    <div v-if="gifPreview" style="display: flex; position: absolute; bottom: 3.2em; height: 10em; width: calc( 100% - 17px ); flex-wrap: wrap; overflow: hidden;">
+        <img  v-for="gif in gifPreview" :src="gif" @click="selectGif(gif)" style="max-width: 40vw" />
     </div>
     <footer v-if="user">   
-      <input class="new-message" type="text" name="new-message" v-model="newMessageText"
+      <input id="new-message" class="new-message" type="text" name="new-message" v-model="newMessageText"
         @keyup.enter.exact="sendMessage">
       <button class="button send" @click.stop="sendMessage" aria-label="send"><i class="fa fa-paper-plane"></i></button>
     </footer>
