@@ -73,8 +73,10 @@
         </section>
       </article>
     </main>
-
-    <footer v-if="user">
+    <div v-if="gifPreview" style="display: flex; position: absolute; bottom: 3.2em; height: 10em; width: calc( 100% - 17px );">
+        <img  v-for="gif in gifPreview" :src="gif" @click="selectGif(gif)" />
+    </div>
+    <footer v-if="user">   
       <input class="new-message" type="text" name="new-message" v-model="newMessageText"
         @keyup.enter.exact="sendMessage">
       <button class="button send" @click.stop="sendMessage" aria-label="send"><i class="fa fa-paper-plane"></i></button>
@@ -83,7 +85,6 @@
       <button class="button register" @click.stop="startAuth" v-if="!authenticating">sign up/login</i></button>
       <button class="button cancel" @click.stop="stopAuth" v-else>cancel</i></button>
     </footer>
-
   </div>
 </body>
 
