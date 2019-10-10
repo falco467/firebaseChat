@@ -1,5 +1,7 @@
 const functions = require('firebase-functions')
 const admin = require('firebase-admin')
+const cheerio = require('cheerio')
+const fetch = require('node-fetch')
 
 admin.initializeApp(functions.config().firebase)
 const db = admin.firestore()
@@ -13,6 +15,20 @@ function throwIfNotAuthenticated (context) {
   }
 }
 
+/**
+ * @param {string} message
+ * @returns {string}
+ */
+async function getPreviewImage (message) {
+  const match = message.match(/https:\/\/gph.is\/g\/\w+/)
+  if (!match) return null
+
+  const pageSource = await(await fetch(match[0])).text()
+
+  const $ = cheerio.load(pageSource)
+  return $(`meta[name=og:image]`).attr('content')
+}
+ 
 // Callable Functions
 
 exports.sendMessage = functions.https.onCall(async (data, context) => {
