@@ -1,6 +1,6 @@
 /* global self */
 
-// Unique String for reload: UidFix2
+// Unique String for reload: UidFix255
 
 // For IntellisSense of Service-Worker classes in VS Code
 /// <reference path="../dev/lib.webworker.d.ts"/>
@@ -18,11 +18,11 @@ self.addEventListener('install', event => event.waitUntil(
     '/lib/firebaseui.js',
     '/images/icons-192.png',
     '/images/icons-512.png',
-    '/__/firebase/5.8.6/firebase-app.js',
-    '/__/firebase/5.8.6/firebase-messaging.js',
-    '/__/firebase/5.8.6/firebase-firestore.js',
-    '/__/firebase/5.8.6/firebase-functions.js',
-    '/__/firebase/5.8.6/firebase-auth.js',
+    '/__/firebase/7.1.0/firebase-app.js',
+    '/__/firebase/7.1.0/firebase-messaging.js',
+    '/__/firebase/7.1.0/firebase-firestore.js',
+    '/__/firebase/7.1.0/firebase-functions.js',
+    '/__/firebase/7.1.0/firebase-auth.js',
     '/__/firebase/init.js'
   ]))
 ))

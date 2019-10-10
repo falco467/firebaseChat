@@ -4,9 +4,9 @@
 /// <reference path="../dev/lib.webworker.d.ts"/>
 
 self.importScripts(
-  '/__/firebase/5.8.6/firebase-app.js',
-  '/__/firebase/5.8.6/firebase-messaging.js',
-  '/__/firebase/5.8.6/firebase-auth.js',
+  '/__/firebase/7.1.0/firebase-app.js',
+  '/__/firebase/7.1.0/firebase-messaging.js',
+  '/__/firebase/7.1.0/firebase-auth.js',
   '/__/firebase/init.js'
 )
 
