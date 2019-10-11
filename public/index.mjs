@@ -165,7 +165,7 @@ window.ChatApp = new Vue({
   },
   methods: {
     selectGif (gifUrl) {
-      this.newMessageText = this.newMessageText.replace(/@gif (\w+|"[^"]+")(\s+)/, gifUrl + ' ')
+      this.newMessageText = this.newMessageText.replace(/@gif (\w+|"[^"]+")(\s*)/, gifUrl + ' ')
       document.getElementById('new-message').focus()
     },
     async initFromLocalStorage () {
