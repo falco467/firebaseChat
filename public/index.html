@@ -34,7 +34,7 @@
 <body>
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/solid.css" crossorigin="anonymous">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/fontawesome.css" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.css" />
+  <link rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.css" crossorigin="anonymous">
 
   <dialog id="errorMessage" class="message error"></dialog>
 
@@ -63,9 +63,7 @@
         <section class="message-content">
           <span class="author">{{m.authorName}}:</span>
           <span class="content">{{m.content}}</span>
-          <picture v-if="m.image">
-            <img class="img-preview" :src="m.image">
-          </picture>
+          <img v-if="m.image" class="img-preview" :src="m.image" crossorigin="anonymous">
         </section>
         <time class="message-timestamp">{{m.timeString}}</time>
       </article>
@@ -77,8 +75,8 @@
         </section>
       </article>
     </main>
-    <div v-if="gifPreview" style="display: flex; position: absolute; bottom: 3.2em; height: 10em; width: calc( 100% - 17px ); flex-wrap: wrap; overflow: hidden;">
-        <img  v-for="gif in gifPreview" :src="gif" @click="selectGif(gif)" style="max-width: 40vw" />
+    <div v-if="gifPreview" class="gif-preview">
+        <img  v-for="gif in gifPreview" :src="gif" @click="selectGif(gif)" :key="gif"/>
     </div>
     <footer v-if="user">   
       <input id="new-message" class="new-message" type="text" name="new-message" v-model="newMessageText"

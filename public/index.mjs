@@ -122,8 +122,8 @@ window.ChatApp = new Vue({
     },
     async newMessageText (val) {
       if (this.gifSearchRequest) {
-        this.gifSearchRequest = null
         this.gifSearchRequest.abort()
+        this.gifSearchRequest = null
       }
 
       const gifSearch = val.match(/@gif (\w+|"[^"]+")(\s*)/)

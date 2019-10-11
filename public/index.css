@@ -26,6 +26,27 @@ body {
   max-width: 20em;
 }
 
+.gif-preview {
+  position: absolute;
+  bottom: 3.2em;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+  padding: 0.3em;
+  padding-bottom: 0;
+  background-color: #29282a;
+}
+
+.gif-preview > img {
+  display: block;
+  max-width: min(30vw, 15em);
+  max-height: 15vh;
+  margin-right: 0.3em;
+  margin-bottom: 0.3em;
+}
+
 /* v-cloak attribute is removed by Vue.JS when it is finished initializing */
 
 [v-cloak] {
