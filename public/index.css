@@ -41,7 +41,7 @@ body {
 
 .gif-preview > img {
   display: block;
-  max-width: min(30vw, 15em);
+  max-width: 30vw;
   max-height: 15vh;
   margin-right: 0.3em;
   margin-bottom: 0.3em;
