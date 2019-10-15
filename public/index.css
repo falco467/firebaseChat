@@ -173,3 +173,7 @@ footer {
 .message-content>.content {
   overflow-wrap: break-word;
 }
+
+.message-content>.content a {
+  color: var(--main-color);
+}

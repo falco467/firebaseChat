@@ -89,6 +89,43 @@ const callSendMessage = firebase.functions().httpsCallable('sendMessage')
 const callRegisterForTopic = firebase.functions().httpsCallable('registerForTopic')
 const callUnregisterFromTopic = firebase.functions().httpsCallable('unregisterFromTopic')
 
+// Vue message-content Component
+Vue.component('message-content', {
+  functional: true,
+  // To compensate for the lack of an instance,
+  // we are now provided a 2nd context argument.
+  // https://vuejs.org/v2/guide/render-function.html#createElement-Arguments
+  render: function (createElement, context) {
+    const children = []
+    let lastMatchEnd = 0
+    // Todo, maybe use a better url regex
+    const urlRegex = /https?:\/\/([a-zA-Z0-9.-]+(?:\/[a-zA-Z0-9.%:_()+=-]*)*(?:\?[a-zA-Z0-9.%:_+&/()=-]*)?(?:#[a-zA-Z0-9.%:()_+=-]*)?)/g
+    const message = context.props.message
+    let match
+    while (match = urlRegex.exec(message)) {
+      if (match.index - lastMatchEnd > 0) {
+        children.push(message.substring(lastMatchEnd, match.index))
+      }
+      children.push(createElement('a', {
+        attrs: {
+          href: match[0]
+        }
+      }, match[0]))
+      lastMatchEnd = urlRegex.lastIndex
+    }
+    if (lastMatchEnd < message.length) {
+      children.push(message.substring(lastMatchEnd, message.length))
+    }
+    return createElement('span', { class: 'content' }, children)
+  },
+  props: {
+    message: {
+      required: true,
+      type: String
+    }
+  }
+})
+
 // Vue Application
 window.ChatApp = new Vue({
   el: '#chatapp',

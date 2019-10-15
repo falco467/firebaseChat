@@ -62,7 +62,8 @@
       <article class="chatmessage" v-for="m,i in messagesWithMeta" :class="{new: i>=readMessageCount}" v-cloak>
         <section class="message-content">
           <span class="author">{{m.authorName}}:</span>
-          <span class="content">{{m.content}}</span>
+          <!-- <span class="content" v-html="m.content"></span> -->
+          <message-content class="content" :message="m.content"></message-content>
           <img v-if="m.image" class="img-preview" :src="m.image" crossorigin="anonymous">
         </section>
         <time class="message-timestamp">{{m.timeString}}</time>
