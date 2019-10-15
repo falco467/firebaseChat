@@ -108,7 +108,8 @@ Vue.component('message-content', {
       }
       children.push(createElement('a', {
         attrs: {
-          href: match[0]
+          href: match[0],
+          target: '_blank'
         }
       }, match[0]))
       lastMatchEnd = urlRegex.lastIndex
