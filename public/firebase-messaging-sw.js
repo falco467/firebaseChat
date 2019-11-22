@@ -4,15 +4,15 @@
 /// <reference path="../dev/lib.webworker.d.ts"/>
 
 self.importScripts(
-  '/__/firebase/7.1.0/firebase-app.js',
-  '/__/firebase/7.1.0/firebase-messaging.js',
-  '/__/firebase/7.1.0/firebase-auth.js',
+  '/__/firebase/7.5.0/firebase-app.js',
+  '/__/firebase/7.5.0/firebase-messaging.js',
+  '/__/firebase/7.5.0/firebase-auth.js',
   '/__/firebase/init.js'
 )
 
 // Notifications
 firebase.messaging().setBackgroundMessageHandler(payload => {
-  self.registration.showNotification(`${payload.data.authorName} wrote in ${payload.data.room}`, {
+  return self.registration.showNotification(`${payload.data.authorName} wrote in ${payload.data.room}`, {
     body: payload.data.content,
     tag: payload.data.room,
     vibrate: [100, 50, 100],
@@ -22,7 +22,7 @@ firebase.messaging().setBackgroundMessageHandler(payload => {
 
 self.addEventListener('notificationclick', e => {
   e.notification.close()
-  e.waitUntil(self.clients.matchAll({ includeUncontrolled: true, type: 'window' }).then(openWindows => {
+  return e.waitUntil(self.clients.matchAll({ includeUncontrolled: true, type: 'window' }).then(openWindows => {
     if (openWindows.length) return openWindows[0].focus()
     return self.clients.openWindow('/')
   }))

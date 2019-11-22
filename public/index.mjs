@@ -101,8 +101,9 @@ Vue.component('message-content', {
     // Todo, maybe use a better url regex
     const urlRegex = /https?:\/\/([a-zA-Z0-9.-]+(?:\/[a-zA-Z0-9.%:_()+=-]*)*(?:\?[a-zA-Z0-9.%:_+&/()=-]*)?(?:#[a-zA-Z0-9.%:()_+=-]*)?)/g
     const message = context.props.message
-    let match
-    while (match = urlRegex.exec(message)) {
+    while (true) {
+      let match = urlRegex.exec(message)
+      if (!match) break
       if (match.index - lastMatchEnd > 0) {
         children.push(message.substring(lastMatchEnd, match.index))
       }
